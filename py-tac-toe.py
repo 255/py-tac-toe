@@ -17,9 +17,8 @@ def printBoard(board):
 			print(horizontalDivider)
 
 def getTile(board, tile):
-	tile = tile - 1
-	row = tile // 3
-	col = tile % 3
+	row = (tile - 1) // 3
+	col = (tile - 1) % 3
 	return board[row][col]
 
 def isValidMove(board, move):
@@ -31,9 +30,8 @@ def isValidMove(board, move):
 	return currentValue == tile
 
 def applyMove(board, tile, marker):
-	tile = tile - 1
-	row = tile // 3
-	col = tile % 3
+	row = (tile - 1) // 3
+	col = (tile - 1) % 3
 	board[row][col] = marker
 
 def getVectorStatus(tiles):
