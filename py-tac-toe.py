@@ -2,6 +2,12 @@ import re
 
 board = [[1,2,3],[4,5,6],[7,8,9]]
 validInput = re.compile('^[1-9]$')
+statusEnum = {"Deadlock": -1, "No victory": 0, "Victory": 1}
+possibleVectors = [
+	[1,2,3], [4,5,6], [7,8,9], # all rows
+	[1,4,7], [2,5,8], [3,6,9], # all columns
+	[1,5,9], [3,5,7] # diagonals
+]
 
 def printBoard(board):
 	horizontalDivider = "---+---+---"
@@ -30,12 +36,47 @@ def applyMove(board, tile, marker):
 	col = tile % 3
 	board[row][col] = marker
 
-print("Welcome to Py-Tac-Toe!")
-printBoard(board)
+def getVectorStatus(tiles):
+	values = list(map(lambda tile: getTile(board, tile), tiles))
+	if values[0] == values[1] == values[2]:
+		return statusEnum["Victory"]
+	elif "X" in values and "O" in values:
+		return statusEnum["Deadlock"]
+	else:
+		return statusEnum["No victory"]
 
-userInput = input("You are X. Your move [1-9]? ")
-if isValidMove(board, userInput):
-	applyMove(board, int(userInput), "X")
-	printBoard(board)
-else:
-	print("Whoops! Your input was invalid, please type a legal move between 1 and 9")
+def getGameStatus(board):
+	gameStatus = statusEnum["Deadlock"]
+	for vector in possibleVectors:
+		status = getVectorStatus(vector)
+		if status == statusEnum["Victory"]:
+			gameStatus = status
+			break
+		elif status == statusEnum["No victory"]:
+			gameStatus = status
+	return gameStatus
+
+def isGameOver(board, lastPlayer):
+	gameStatus = getGameStatus(board)
+	if gameStatus == statusEnum["Victory"]:
+		printBoard(board)
+		print("Victory for player", lastPlayer)
+		return True
+	elif gameStatus == statusEnum["Deadlock"]:
+		printBoard(board)
+		print("Cat game - nobody can win")
+		return True
+	else:
+		return False
+
+def gameLoop():
+	print("Welcome to Py-Tac-Toe!")
+	while isGameOver(board, "X") == False:
+		printBoard(board)
+		userInput = input("You are X. Your move [1-9]? ")
+		while not isValidMove(board, userInput):
+			print("Whoops! Your input was invalid, please type a legal move between 1 and 9")
+			userInput = input("You are X. Your move [1-9]? ")
+		applyMove(board, int(userInput), "X")
+
+gameLoop()
