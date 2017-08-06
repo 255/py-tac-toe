@@ -1,15 +1,6 @@
 import re
 import random
 
-board = [[1,2,3],[4,5,6],[7,8,9]]
-validInput = re.compile('^[1-9]$')
-statusEnum = {"Deadlock": -1, "No victory": 0, "Victory": 1}
-possibleVectors = [
-	[1,2,3], [4,5,6], [7,8,9], # all rows
-	[1,4,7], [2,5,8], [3,6,9], # all columns
-	[1,5,9], [3,5,7] # diagonals
-]
-
 def printBoard(board):
 	horizontalDivider = "---+---+---"
 	for row in range(3):
@@ -35,7 +26,7 @@ def applyMove(board, tile, marker):
 	col = (tile - 1) % 3
 	board[row][col] = marker
 
-def getVectorStatus(tiles):
+def getVectorStatus(board, tiles):
 	values = list(map(lambda tile: getTile(board, tile), tiles))
 	if values[0] == values[1] == values[2]:
 		return statusEnum["Victory"]
@@ -47,7 +38,7 @@ def getVectorStatus(tiles):
 def getGameStatus(board):
 	gameStatus = statusEnum["Deadlock"]
 	for vector in possibleVectors:
-		status = getVectorStatus(vector)
+		status = getVectorStatus(board, vector)
 		if status == statusEnum["Victory"]:
 			gameStatus = status
 			break
@@ -100,10 +91,24 @@ def getOppositeMarker(marker):
 	else:
 		return "X"
 
+# initialize global variables
+validInput = re.compile('^[1-9]$')
+statusEnum = {"Deadlock": -1, "No victory": 0, "Victory": 1}
+possibleVectors = [
+	[1,2,3], [4,5,6], [7,8,9], # all rows
+	[1,4,7], [2,5,8], [3,6,9], # all columns
+	[1,5,9], [3,5,7] # diagonals
+]
+
 def gameLoop():
+	board = [[1,2,3],[4,5,6],[7,8,9]]
+
+	# let user decide order of play
 	print("Welcome to Py-Tac-Toe!")
 	playerMarker = getPlayerMarkerChoice()
 	computerMarker = getOppositeMarker(playerMarker)
+
+	# play the game
 	lastPlayer = "O" # X always goes first
 	while isGameOver(board, lastPlayer) == False:
 		if lastPlayer == playerMarker:
