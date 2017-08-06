@@ -75,23 +75,42 @@ def getComputerMove(board):
 			validMoves.append(tile)
 	return int(random.choice(validMoves))
 
-def getPlayerMove(board):
+def getPlayerMove(board, playerMarker):
 	printBoard(board)
-	userInput = input("You are X. Your move [1-9]? ")
+	requestString = "You are " + playerMarker + ". Your move [1-9]? "
+	userInput = input(requestString)
 	while not isValidMove(board, userInput):
 		print("Whoops! Your input was invalid, please type a legal move between 1 and 9")
-		userInput = input("You are X. Your move [1-9]? ")
+		userInput = input(requestString)
 	return int(userInput)
+
+def getPlayerMarkerChoice():
+	userInput = input("Would you like to go first [1] or second [2]? ")
+	while not userInput in ("1", "2"):
+		print("Whoops! You must enter '1' or '2'")
+		userInput = input("Would you like to go first [1] or second [2]? ")
+	if userInput == "1":
+		return "X"
+	else:
+		return "O"
+
+def getOppositeMarker(marker):
+	if marker == "X":
+		return "O"
+	else:
+		return "X"
 
 def gameLoop():
 	print("Welcome to Py-Tac-Toe!")
+	playerMarker = getPlayerMarkerChoice()
+	computerMarker = getOppositeMarker(playerMarker)
 	lastPlayer = "O" # X always goes first
 	while isGameOver(board, lastPlayer) == False:
-		if lastPlayer == "X":
-			applyMove(board, getComputerMove(board), "O")
-			lastPlayer = "O"
+		if lastPlayer == playerMarker:
+			applyMove(board, getComputerMove(board), computerMarker)
+			lastPlayer = computerMarker
 		else:
-			applyMove(board, getPlayerMove(board), "X")
-			lastPlayer = "X"
+			applyMove(board, getPlayerMove(board, playerMarker), playerMarker)
+			lastPlayer = playerMarker
 
 gameLoop()
