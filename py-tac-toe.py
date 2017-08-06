@@ -1,4 +1,5 @@
 import re
+import random
 
 board = [[1,2,3],[4,5,6],[7,8,9]]
 validInput = re.compile('^[1-9]$')
@@ -67,14 +68,30 @@ def isGameOver(board, lastPlayer):
 	else:
 		return False
 
+def getComputerMove(board):
+	validMoves = []
+	for tile in "123456789":
+		if isValidMove(board, tile):
+			validMoves.append(tile)
+	return int(random.choice(validMoves))
+
+def getPlayerMove(board):
+	printBoard(board)
+	userInput = input("You are X. Your move [1-9]? ")
+	while not isValidMove(board, userInput):
+		print("Whoops! Your input was invalid, please type a legal move between 1 and 9")
+		userInput = input("You are X. Your move [1-9]? ")
+	return int(userInput)
+
 def gameLoop():
 	print("Welcome to Py-Tac-Toe!")
-	while isGameOver(board, "X") == False:
-		printBoard(board)
-		userInput = input("You are X. Your move [1-9]? ")
-		while not isValidMove(board, userInput):
-			print("Whoops! Your input was invalid, please type a legal move between 1 and 9")
-			userInput = input("You are X. Your move [1-9]? ")
-		applyMove(board, int(userInput), "X")
+	lastPlayer = "O" # X always goes first
+	while isGameOver(board, lastPlayer) == False:
+		if lastPlayer == "X":
+			applyMove(board, getComputerMove(board), "O")
+			lastPlayer = "O"
+		else:
+			applyMove(board, getPlayerMove(board), "X")
+			lastPlayer = "X"
 
 gameLoop()
